@@ -1,0 +1,171 @@
+@page "/Configuracion/EstadoCaso"
+
+
+
+@if (modo == ModoApp.Lista)
+{
+    <h3>Lista de Estado de Casos (@listaEstado.Count) </h3>
+
+    <div class="text-end">
+        <button @onclick="nuevoestadoCaso" class="btn btn-outline-dark btn-sm">Nuevo Estado de Casos</button>
+    </div> <br>
+
+    <table class="table table-hover ">
+        <thead class="bg-secondary ">
+            <tr class="text-white">
+                <th>Codigo</th>
+                <th>Estado de los Casos</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (listaEstado.Count > 0)
+            {
+                @foreach (var estadoCaso in listaEstado)
+                {
+                    <tr>
+                        <td>@estadoCaso["id_estadoCaso"]</td>
+                        <td>@estadoCaso["estadoCasos"]</td>
+                        <td>
+                            <button @onclick="(e)=>{editarestadoCaso(estadoCaso); }" class="btn btn-outline-primary btn-sm oi oi-browser"> Editar </button>
+                            <button @onclick="(e)=>{eliminarestadoCaso(estadoCaso); }" class="btn btn-outline-danger btn-sm oi oi-trash"> Eliminar </button>
+                        </td>
+                    </tr>
+                }
+
+            }
+            else
+            {
+                <tr>
+                    <td colspan="4">No hay Casos registrados</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+@if (modo == ModoApp.Insertar)
+{
+    <h5><b> Resgistrar Nuevo Estado de Casos </b></h5>
+    <font face="ginebra">
+
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Codigo</span>
+            <input type="text" class="form-control" @oninput="(e)=> { setCampo(e.Value.ToString(), 1); }">
+        </div>
+
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Estado de los Casos</span>
+            <input type="text" class="form-control" @oninput="(e)=> { setCampo(e.Value.ToString(), 2); }">
+        </div>
+    </font>
+    <form>
+        <div class="text-center">
+            <button @onclick="Guardar" class="btn btn-outline-success oi oi-task "> Guardar Ingreso </button>
+            <button @onclick="Cancelar" class="btn btn-outline-danger oi oi-x "> Cancelar Ingreso </button>
+
+        </div>
+
+    </form>
+
+}
+
+@if (modo == ModoApp.Modificar)
+{
+    <h5><b> Editar Estado de Casos </b></h5>
+    <font face="ginebra">
+
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Codigo</span>
+            <input value="@estado["id_estadoCaso"]" readonly type="text" class="form-control">
+        </div>
+
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Estado de los Casos</span>
+            <input value="@estado["estadoCasos"]" type="text" class="form-control" @oninput="(e)=> { setCampo(e.Value.ToString(), 2); }">
+        </div>
+    </font>
+    <form>
+        <div class="text-center">
+            <button @onclick="guardarModificacion" class="btn btn-outline-success oi oi-task "> Guardar Editor </button>
+            <button @onclick="Cancelar" class="btn btn-outline-danger  oi oi-x"> Cancelar Editor </button>
+
+        </div>
+
+    </form>
+
+}
+
+@code {
+
+    Dictionary<string, object> estado = new Dictionary<string, object>();
+    List<Dictionary<string, object>> listaEstado = new List<Dictionary<string, object>>();
+
+    ModoApp modo = ModoApp.Lista;
+
+    protected override async Task OnInitializedAsync()
+    {
+        actualizarLista();
+    }
+    public void actualizarLista()
+    {
+
+        listaEstado = Conexion.consulta("SELECT * FROM estadoCaso");
+    }
+
+    public void editarestadoCaso(Dictionary<string, object> estadoCaso)
+    {
+        estado = estadoCaso;
+        modo = ModoApp.Modificar;
+    }
+
+    public void guardarModificacion(){
+
+        Conexion.Actualizar("estadoCaso", estado, "id_estadoCaso");
+
+        modo = ModoApp.Lista;
+        actualizarLista();
+        
+    }
+
+    public void eliminarestadoCaso(Dictionary<string, object> estadoCaso ){
+
+        var sql = "delete from estadoCaso where id_estadoCaso =" + estadoCaso["id_estadoCaso"];
+        Conexion.Ejecutar(sql);
+
+        actualizarLista();
+    }
+    public void nuevoestadoCaso()
+    {
+
+        modo = ModoApp.Insertar;
+        estado = new Dictionary<string, object>();
+    }
+    public void Guardar()
+    {
+        if (estado.Count > 0)
+        {
+            Conexion.insertar("estadoCaso", estado);
+        }
+        modo = ModoApp.Lista;
+        actualizarLista();
+    }
+    void setCampo(string valor, int campo)
+    {
+        switch (campo)
+        {
+
+            case 1:
+              estado  ["id_estadoCaso"] = valor;
+                break;
+            case 2:
+                estado["estadoCasos"] = valor;
+                break;
+        }
+    }
+
+    void Cancelar()
+    {
+        modo = ModoApp.Lista;
+    }
+
+}

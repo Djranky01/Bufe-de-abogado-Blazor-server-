@@ -1,0 +1,168 @@
+@page "/Configuracion/tipos_casos"
+
+@if (modo == ModoApp.Lista)
+{
+    <h3>Lista de los Tipos de Casos (@listaCasos.Count) </h3>
+
+    <div class="text-end">
+        <button @onclick="nuevoTipoCaso" class="btn btn-outline-dark btn-sm">Nuevo Tipo de Casos</button>
+    </div> <br>
+
+    <table class="table table-hover ">
+        <thead class="bg-secondary ">
+            <tr class="text-white">
+                <th>Codigo</th>
+                <th>Nombre de los Casos</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (listaCasos.Count > 0)
+            {
+                @foreach (var tipoCaso in listaCasos)
+                {
+                    <tr>
+                        <td>@tipoCaso["idTipo"]</td>
+                        <td>@tipoCaso["nombre"]</td>
+                        <td>
+                            <button @onclick="(e)=>{editartipoCaso(tipoCaso); }" class="btn btn-outline-primary btn-sm oi oi-browser"> Editar </button>
+                            <button @onclick="(e)=>{eliminartipoCaso(tipoCaso); }" class="btn btn-outline-danger btn-sm oi oi-trash"> Eliminar </button>
+                        </td>
+                    </tr>
+                }
+
+            }
+            else
+            {
+                <tr>
+                    <td colspan="4">No hay Casos registrados</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+@if (modo == ModoApp.Insertar)
+{
+    <h5><b> Resgistrar Nuevo Tipos de Casos </b></h5>
+    <font face="Comic Sans MS,arial,verdana">
+
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Codigo</span>
+            <input type="text" class="form-control" @oninput="(e)=> { setCampo(e.Value.ToString(), 1); }">
+        </div>
+
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Nombre de los Casos</span>
+            <input type="text" class="form-control" @oninput="(e)=> { setCampo(e.Value.ToString(), 2); }">
+        </div>
+    </font>
+    <form>
+        <div class="text-center">
+            <button @onclick="Guardar" class="btn btn-outline-success oi oi-task "> Guardar Ingreso </button>
+            <button @onclick="Cancelar" class="btn btn-outline-danger oi oi-x "> Cancelar Ingreso </button>
+
+        </div>
+
+    </form>
+
+}
+
+@if (modo == ModoApp.Modificar)
+{
+    <h5><b> Editar los Tipos de Casos </b></h5>
+    <font face="Comic Sans MS,arial,verdana">
+
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Codigo</span>
+            <input value="@Tcasos["idTipo"]" readonly type="text" class="form-control">
+        </div>
+
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Nombre de los Casos</span>
+            <input value="@Tcasos["nombre"]" type="text" class="form-control" @oninput="(e)=> { setCampo(e.Value.ToString(), 2); }">
+        </div>
+    </font>
+    <form>
+        <div class="text-center">
+            <button @onclick="guardarModificacion" class="btn btn-outline-success oi oi-task "> Guardar Editor </button>
+            <button @onclick="Cancelar" class="btn btn-outline-danger  oi oi-x"> Cancelar Editor </button>
+
+        </div>
+
+    </form>
+
+}
+@code {
+
+    Dictionary<string, object> Tcasos = new Dictionary<string, object>();
+    List<Dictionary<string, object>> listaCasos = new List<Dictionary<string, object>>();
+
+    ModoApp modo = ModoApp.Lista;
+
+    protected override async Task OnInitializedAsync()
+    {
+        actualizarLista();
+    }
+    public void actualizarLista()
+    {
+
+        listaCasos = Conexion.consulta("SELECT * FROM tipoCaso");
+    }
+
+    public void editartipoCaso(Dictionary<string, object> tipoCaso)
+    {
+        Tcasos = tipoCaso;
+        modo = ModoApp.Modificar;
+    }
+
+    public void guardarModificacion(){
+
+        Conexion.Actualizar("tipoCaso", Tcasos, "idTipo");
+
+        modo = ModoApp.Lista;
+        actualizarLista();
+        
+    }
+
+    public void eliminartipoCaso(Dictionary<string, object> tipoCaso ){
+
+        var sql = "delete from tipoCaso where idTipo =" + tipoCaso["idTipo"];
+        Conexion.Ejecutar(sql);
+
+        actualizarLista();
+    }
+    public void nuevoTipoCaso()
+    {
+
+        modo = ModoApp.Insertar;
+        Tcasos = new Dictionary<string, object>();
+    }
+    public void Guardar()
+    {
+        if (Tcasos.Count > 0)
+        {
+            Conexion.insertar("tipoCaso", Tcasos);
+        }
+        modo = ModoApp.Lista;
+        actualizarLista();
+    }
+    void setCampo(string valor, int campo)
+    {
+        switch (campo)
+        {
+
+            case 1:
+              Tcasos  ["idTipo"] = valor;
+                break;
+            case 2:
+                Tcasos["nombre"] = valor;
+                break;
+        }
+    }
+
+    void Cancelar()
+    {
+        modo = ModoApp.Lista;
+    }
+
+}

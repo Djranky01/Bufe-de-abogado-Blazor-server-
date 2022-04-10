@@ -1,0 +1,368 @@
+@page "/Casos"
+@inject IJSRuntime JS
+
+@if (modo == ModoApp.Lista)
+{
+    <b>
+    <h3>Lista de los Casos del bufe de Abogado (@tipoCaso.Count)</h3>
+    </b>
+
+
+    <div class="text-end">
+        <button @onclick="nuevoTipos_casos" class="btn btn-outline-dark btn-sm">Nuevo Tipo de caso</button>
+    </div> <br>
+
+    <table class="table table-hover ">
+        <thead class="bg-secondary ">
+            <tr class="text-white">
+                <th>Codigo</th>
+                <th>Fecha de Ingreso</th>
+                <th>Tipos de Casos</th>
+                <th>Nombre del Cliente</th>
+                <th>Abogado Asignado</th>
+                <th>Descripcion del caso</th>
+                <th>Estado del Caso</th>
+                <th>Fecha de Cierre</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            @if (tipoCaso.Count > 0)
+            {
+                @foreach (var casos in tipoCaso)
+                {
+                    <tr>
+                        <td>@casos["idCasos"]</td>
+                        <td>@casos["fechaIngreso"]</td>
+                        <td>@casos["id_tipoCasos"]</td>
+                        <td>@casos["idCliente"]</td>
+                        <td>@casos["idAbogado"]</td>
+                        <td>@casos["descripcionCaso"]</td>
+                        <td>@casos["id_estadoCaso"]</td>
+                        <td>@casos["fechaCierre"]</td>
+                        <td>
+                            <button @onclick="(e)=>{editarAbogado(casos); }" class="btn btn-outline-primary btn-sm oi oi-browser"> Editar</button>
+                            <button @onclick="(e)=>{eliminarAbogado(casos); }" class="btn btn-outline-danger btn-sm oi oi-trash"> Eliminar</button>
+                        </td>
+                    </tr>
+                }
+
+            }
+            else
+            {
+                <tr>
+                    <td colspan="4">No hay casos registrados</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+@if (modo == ModoApp.Insertar)
+{
+    <h5><b> Resgistrar Nuevo Tipos de Casos </b></h5>
+    <font face="ginebra">
+
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Codigo</span>
+            <input type="text" class="form-control" @oninput="(e)=> { setCampo(e.Value.ToString(), 1); }">
+        </div>
+
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Fecha de Ingreso</span>
+            <input type="text" class="form-control" @oninput="(e)=> { setCampo(e.Value.ToString(), 2); }">
+        </div>
+
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz" > Tipos de Casos </span>
+           <select  type="text" class="form-control" name="estado" id="estado" @oninput="(e)=> { setCampo(e.Value.ToString(), 3); }"  >
+                <option selected>Seleccione...................................................</option>
+                @foreach (var tipoCaso in listaTipos)
+                {
+                    
+                    <option value="@tipoCaso["idTipo"]">@tipoCaso["nombre"]</option>
+
+                }
+            </select>
+        </div>
+
+      <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz" > Nombre del Cliente</span>
+           <select type="text" class="form-control" name="estado" id="estado" @oninput="(e)=> { setCampo(e.Value.ToString(), 4); }"  >
+               <option selected>Seleccione...................................................</option>
+                @foreach (var cliente in listacliente)
+                {
+                    
+                    <option value="@cliente["idCliente"]">@cliente["nombreCliente"]</option>
+
+                }
+            </select>
+        </div>
+       <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz" > Abogado Asignado</span>
+           <select type="text" class="form-control" name="estado" id="estado" @oninput="(e)=> { setCampo(e.Value.ToString(), 5); }"  >
+               <option selected>Seleccione...................................................</option>
+                @foreach (var abogado in listaBufe)
+                {
+                    
+                    <option value="@abogado["idAbogado"]">@abogado["nombreAbogado"]</option>
+
+                }
+            </select>
+        </div>
+
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Descripcion del Caso</span>
+            <input type="text" class="form-control" @oninput="(e)=> { setCampo(e.Value.ToString(), 6); }">
+
+        </div>
+
+         <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz"> Estado del Caso </span>
+           <select type="text" class="form-control" name="estado" id="estado" @oninput="(e)=> { setCampo(e.Value.ToString(), 7); }" >
+               <option selected>Seleccione...................................................</option>
+                @foreach (var estadoCaso in listaEstado)
+                {
+                    
+                    <option value="@estadoCaso["id_estadoCaso"]">@estadoCaso["estadoCasos"]</option>
+
+                }
+            </select>
+        </div>
+
+
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz"> Fecha de Cierre </span>
+            <input type="text" class="form-control" @oninput="(e)=> { setCampo(e.Value.ToString(), 8); }">
+
+        </div>
+
+    </font>
+
+    <form>
+        <div class="text-center">
+            <button @onclick="Guardar" class="btn btn-outline-success oi oi-task "> Guardar Ingreso </button>
+            <button @onclick="Cancelar" class="btn btn-outline-danger oi oi-x "> Cancelar Ingreso </button>
+
+        </div>
+
+    </form>
+}
+
+@if (modo == ModoApp.Modificar)
+{
+    <h5><b> Resgistrar Nuevo Tipos de Casos </b></h5>
+    <font face="ginebra">
+
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Codigo</span>
+            <input value="@tipCasos["idCasos"]" readonly type="text" class="form-control">
+        </div>
+
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Fecha de Ingreso</span>
+            <input value="@tipCasos["fechaIngreso"]" type="text" class="form-control" @oninput="(e)=> { setCampo(e.Value.ToString(), 2); }">
+        </div>
+
+          <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz" > Tipos de Casos </span>
+           <select value="@tipCasos["id_tipoCasos"]"  type="text" class="form-control" name="estado" id="estado" @oninput="(e)=> { setCampo(e.Value.ToString(), 3); }"  >
+               <option selected>@tipCasos["id_tipoCasos"]</option>
+                @foreach (var tipoCaso in listaTipos)
+                {
+                    
+                    <option value="@tipoCaso["idTipo"]">@tipoCaso["nombre"]</option>
+
+                }
+            </select>
+        </div>
+
+
+       <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz" > Nombre del Cliente</span>
+           <select value="@tipCasos["idCliente"]"  type="text" class="form-control" name="estado" id="estado" @oninput="(e)=> { setCampo(e.Value.ToString(), 4); }"  >
+                <option selected>@tipCasos["idCliente"]</option>
+                @foreach (var cliente in listacliente)
+                {
+                    
+                    <option value="@cliente["idCliente"]">@cliente["nombreCliente"]</option>
+
+                }
+            </select>
+        </div>
+
+
+             <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz" > Abogado Asignado</span>
+           <select value="@tipCasos["idAbogado"]"  type="text" class="form-control" name="estado" id="estado" @oninput="(e)=> { setCampo(e.Value.ToString(), 5); }"  >
+                <option selected>@tipCasos["idAbogado"]</option>
+                @foreach (var abogado in listaBufe)
+                {
+                    
+                    <option value="@abogado["idAbogado"]">@abogado["nombreAbogado"]</option>
+
+                }
+            </select>
+        </div>
+
+
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Descripcion del Caso</span>
+            <input value="@tipCasos["descripcionCaso"]" type="text" class="form-control" @oninput="(e)=> { setCampo(e.Value.ToString(), 6); }">
+
+        </div>
+
+            <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz"> Estado del Caso </span>
+           <select value="@tipCasos["id_estadoCaso"]"  type="text" class="form-control" name="estado" id="estado" @oninput="(e)=> { setCampo(e.Value.ToString(), 7); }"  >
+                <option selected>@tipCasos["id_estadoCaso"]</option>
+                @foreach (var estadoCaso in listaEstado)
+                {
+                    
+                    <option value="@estadoCaso["id_estadoCaso"]">@estadoCaso["estadoCasos"]</option>
+
+                }
+            </select>
+        </div>
+
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz"> Fecha de Cierre </span>
+            <input value="@tipCasos["fechaCierre"]" type="text" class="form-control" @oninput="(e)=> { setCampo(e.Value.ToString(), 8); }">
+
+        </div>
+
+    </font>
+
+    <form>
+        <div class="text-center no-print">
+            <button @onclick="guardarModificar" class="btn btn-outline-success oi oi-task "> Guardar Editor </button>
+            <button @onclick="Cancelar" class="btn btn-outline-danger oi oi-x "> Cancelar Editor </button>
+
+        </div>
+
+    </form>
+    <div class="no-print text-end " >
+    <button @onclick="imprime" class="btn btn-group-vertical text-black"> Imprimir </button>
+    </div>
+}
+
+
+
+
+
+
+@code {
+
+    Dictionary<string, object> tipCasos = new Dictionary<string, object>();
+    List<Dictionary<string, object>> tipoCaso = new List<Dictionary<string, object>>();
+    List<Dictionary<string, object>> listaEstado = new List<Dictionary<string, object>>();
+    List<Dictionary<string, object>> listaBufe = new List<Dictionary<string, object>>();
+    
+    List<Dictionary<string, object>> listacliente = new List<Dictionary<string, object>>();
+    List<Dictionary<string, object>> listaTipos = new List<Dictionary<string, object>>();
+
+
+    ModoApp modo = ModoApp.Lista;
+
+    protected override async Task OnInitializedAsync()
+    {
+        actualizarLista();
+    }
+    public void actualizarLista()
+    {
+
+        tipoCaso = Conexion.consulta("select idCasos, fechaIngreso,t.nombre as id_tipoCasos, e.nombreCliente as idCliente, i.nombreAbogado as idAbogado, descripcionCaso, c.estadoCasos as id_estadoCaso, fechaCierre from casos inner join tipoCaso t on t.idTipo = casos.id_tipoCasos inner join cliente e on e.idCliente = casos.idCliente inner join abogado i on i.idAbogado = casos.idAbogado inner join estadoCaso c on c.id_estadoCaso = casos.id_estadoCaso");
+        listaTipos = Conexion.consulta("SELECT * FROM tipoCaso");
+        listacliente = Conexion.consulta("SELECT * FROM cliente");
+        listaBufe = Conexion.consulta("SELECT * FROM abogado");
+        listaEstado = Conexion.consulta("SELECT * FROM estadoCaso");
+
+    }
+
+    public void editarAbogado(Dictionary<string, object> casos)
+    {
+        tipCasos = casos;
+        modo = ModoApp.Modificar;
+    }
+
+    public void nuevoTipos_casos()
+    {
+
+        modo = ModoApp.Insertar;
+        tipCasos = new Dictionary<string, object>();
+
+    }
+
+    public void guardarModificar()
+    {
+
+        Conexion.Actualizar("casos", tipCasos, "idCasos");
+
+        modo = ModoApp.Lista;
+        actualizarLista();
+
+    }
+
+    public void eliminarAbogado(Dictionary<string, object> casos)
+    {
+
+        var sql = "delete from casos where idCasos =" + casos["idCasos"];
+        Conexion.Ejecutar(sql);
+
+        actualizarLista();
+    }
+
+
+    public void Guardar()
+    {
+        if (tipCasos.Count > 0)
+        {
+            Conexion.insertar("casos", tipCasos);
+        }
+        modo = ModoApp.Lista;
+        actualizarLista();
+    }
+
+    public void setCampo(string valor, int campo)
+    {
+
+        switch (campo)
+        {
+            case 1:
+                tipCasos["idCasos"] = valor;
+                break;
+            case 2:
+                tipCasos["fechaIngreso"] = valor;
+                break;
+            case 3:
+                tipCasos["id_tipoCasos"] = valor;
+                break;
+            case 4:
+                tipCasos["idCliente"] = valor;
+                break;
+            case 5:
+                tipCasos["idAbogado"] = valor;
+                break;
+            case 6:
+                tipCasos["descripcionCaso"] = valor;
+                break;
+            case 7:
+                tipCasos["id_estadoCaso"] = valor;
+                break;
+            case 8:
+                tipCasos["fechaCierre"] = valor;
+                break;
+
+
+        }
+    }
+
+void imprime(){
+    JS.InvokeVoidAsync("print");
+}
+    public void Cancelar()
+    {
+
+        modo = ModoApp.Lista;
+    }
+}

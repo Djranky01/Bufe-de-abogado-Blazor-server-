@@ -1,0 +1,233 @@
+@page  "/Configuracion/Abogado"
+
+
+@if (modo == ModoApp.Lista)
+{
+    <h3>Lista de Abogado (@listaAbogado.Count) </h3>
+
+    <div class="text-end">
+        <button @onclick="nuevoAbogdo" class="btn btn-outline-primary btn-sm">Nuevo Abogado</button>
+    </div> <br>
+
+    <table class="table table-hover ">
+        <thead class="bg-secondary ">
+            <tr class="text-white">
+                <th>Codigo</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Celular</th>
+                <th>Email</th>
+                <th>Tipo de Abogado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (listaAbogado.Count > 0)
+            {
+                @foreach (var abogado in listaAbogado)
+                {
+                    <tr>
+                        <th>@abogado["idAbogado"]</th>
+                        <td>@abogado["nombreAbogado"]</td>
+                        <td>@abogado["apellidoAbogado"]</td>
+                        <td>@abogado["celular"]</td>
+                        <td>@abogado["correoAbogado"]</td>
+                        <td>@abogado["tipoAbogado"]</td>
+                        <td>
+                            <button @onclick="(e)=>{editarAbogado(abogado); }" class="btn btn-outline-primary btn-sm oi oi-browser"> Editar </button>
+                            <button @onclick="(e)=>{eliminarAbogado(abogado); }" class="btn btn-outline-danger btn-sm oi oi-trash"> Eliminar </button>
+                        </td>
+                    </tr>
+                }
+
+            }
+            else
+            {
+                <tr>
+                    <td colspan="4">No hay Abogados registrados</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@if (modo == ModoApp.Insertar)
+{
+    <h5> Resgistrar Nuevo Abogado </h5>
+<font face="ginebra">
+
+         <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Codigo</span>
+            <input type="text" class="form-control">
+        </div>
+
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Nombre </span>
+            <input type="text" class="form-control" @oninput="(e)=> { setCampo(e.Value.ToString(), 2); }">>
+        </div>
+
+         <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz"> Apellido </span>
+            <input type="text" class="form-control" @oninput="(e)=> { setCampo(e.Value.ToString(), 3); }">>
+        </div>
+
+         <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz"> Celular </span>
+            <input type="text" class="form-control" @oninput="(e)=> { setCampo(e.Value.ToString(), 4); }">>
+        </div>
+
+         <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz"> Correo </span>
+            <input type="text" class="form-control" @oninput="(e)=> { setCampo(e.Value.ToString(), 5); }">>
+        </div>
+
+         <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz"> Tipo de Abogado </span>
+            <input type="text" class="form-control" @oninput="(e)=> { setCampo(e.Value.ToString(), 6); }">>
+        </div>
+</font>
+
+    <form>
+        <div class="text-center">
+            <button @onclick="Guardar" class="btn btn-outline-secondary oi oi-task"> Guardar Ingreso </button>
+            <button @onclick="Cancelar" class="btn btn-outline-danger oi oi-x "> Cancelar Editor </button>
+
+        </div>
+  
+    </form>
+}
+
+@if (modo == ModoApp.Modificar)
+{
+    <h3> Editar Registro de Abogado </h3>
+    <form>
+     <font face="ginebra">
+
+         <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Codigo</span>
+            <input value="@aboga["idAbogado"]" readonly type="text" class="form-control">
+        </div>
+
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Nombre </span>
+            <input value="@aboga["nombreAbogado"]" type="text" class="form-control" @oninput="(e)=> { setCampo(e.Value.ToString(), 2); }">>
+        </div>
+
+         <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz"> Apellido </span>
+            <input value="@aboga["apellidoAbogado"]" type="text" class="form-control" @oninput="(e)=> { setCampo(e.Value.ToString(), 3); }">>
+        </div>
+
+         <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz"> Celular </span>
+            <input value="@aboga["celular"]" type="text" class="form-control" @oninput="(e)=> { setCampo(e.Value.ToString(), 4); }">>
+        </div>
+
+         <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz"> Correo </span>
+            <input value="@aboga["correoAbogado"]" type="text" class="form-control" @oninput="(e)=> { setCampo(e.Value.ToString(), 5); }">>
+        </div>
+
+         <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz"> Tipo de Abogado </span>
+            <input value="@aboga["tipoAbogado"]" type="text" class="form-control" @oninput="(e)=> { setCampo(e.Value.ToString(), 6); }">>
+        </div>
+
+    </font>
+    </form>
+
+    <form>
+        <div class="text-center">
+            <button @onclick="guardarModificacion" class="btn btn-outline-secondary oi oi-task "> Guardar Editor </button>
+            <button @onclick="Cancelar" class="btn btn-outline-danger oi oi-x "> Cancelar Editor </button>
+
+        </div>
+    </form>
+}
+
+@code {
+
+    Dictionary<string, object> aboga = new Dictionary<string, object>();
+    List<Dictionary<string, object>> listaAbogado = new List<Dictionary<string, object>>();
+
+    ModoApp modo = ModoApp.Lista;
+
+    protected override async Task OnInitializedAsync()
+    {
+        actualizarLista();
+    }
+    public void actualizarLista()
+    {
+
+        listaAbogado = Conexion.consulta("SELECT * FROM abogado");
+    }
+
+    public void editarAbogado(Dictionary<string, object> abogado)
+    {
+        aboga = abogado;
+        modo = ModoApp.Modificar;
+    }
+
+    public void guardarModificacion(){
+
+        Conexion.Actualizar("abogado", aboga, "idAbogado");
+
+        modo = ModoApp.Lista;
+        actualizarLista();
+        
+    }
+
+    public void eliminarAbogado(Dictionary<string, object> abogado){
+
+        var sql = "delete from abogado where idAbogado =" + abogado["idAbogado"];
+        Conexion.Ejecutar(sql);
+
+        actualizarLista();
+    }
+    public void nuevoAbogdo()
+    {
+
+        modo = ModoApp.Insertar;
+        aboga = new Dictionary<string, object>();
+    }
+    public void Guardar()
+    {
+        if (aboga.Count > 0)
+        {
+            Conexion.insertar("abogado", aboga);
+        }
+        modo = ModoApp.Lista;
+        actualizarLista();
+    }
+    void setCampo(string valor, int campo)
+    {
+        switch (campo)
+        {
+            case 1:
+                aboga["idAbogado"] = valor;
+                break;
+
+            case 2:
+                aboga["nombreAbogado"] = valor;
+                break;
+            case 3:
+                aboga["apellidoAbogado"] = valor;
+                break;
+            case 4:
+                aboga["celular"] = valor;
+                break;
+            case 5:
+                aboga["correoAbogado"] = valor;
+                break;
+            case 6:
+                aboga["tipoAbogado"] = valor;
+                break;
+        }
+    }
+
+    void Cancelar()
+    {
+        modo = ModoApp.Lista;
+    }
+
+}

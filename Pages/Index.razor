@@ -1,0 +1,100 @@
+﻿@page "/"
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+@inject NavigationManager NavigationManager
+@inject ProtectedSessionStorage SessionStorage
+@layout SimpleLayout
+
+
+<section class="vh-100">
+  <div class="container-fluid h-custom">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col-md-9 col-lg-6 col-xl-5">
+        <img
+          src="/img/logo.png"
+          alt="Sample image">
+      </div>
+      <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
+        <form>
+          <div class="d-flex flex-row align-items-center justify-content-center justify-content-lg-start">
+            <div class="d-flex align-items-center mb-3 pb-1">
+              <i class="fas fa-cubes fa-2x me-3" style="color: #ff6219;"></i>
+              <center><span class="h1 fw-bold mb-0">LOGIN</span></center> 
+            </div>
+          </div>
+
+          <!-- Usuario input -->
+          <div class="form-outline mb-4">
+            <input @bind="Usuario" type="email" id="form3Example3" class="form-control form-control-lg"
+              placeholder="Introduzca Usuario" />
+            <label class="form-label" for="form3Example3">Usuario</label>
+          </div>
+
+          <!-- Password input -->
+          <div class="form-outline mb-3">
+            <input @bind="Clave" type="password" id="form3Example4" class="form-control form-control-lg"
+              placeholder="Introduzca Contraseña " />
+            <label class="form-label" for="form3Example4">Contraseña</label>
+          </div>
+
+          <div class="text-center text-lg-start mt-4 pt-2">
+              <button @onclick ="Login" class="btn btn-dark btn-lg btn-block" type="button"
+                style="padding-left: 2.5rem; padding-right: 2.5rem;">Ingresar</button>
+          </div>
+          <div style="color: red;">
+            @Mensaje
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+   <div class="d-flex flex-column flex-md-row text-center text-md-start justify-content-between py-4 px-5 px-xl-6 bg-secondary">
+    <!-- Copyright -->
+    <div class="text-white mb-3 mb-md-0">
+      Luis A Cuevas ID 100043331
+    </div>
+    <!-- Copyright -->
+    <!-- Right -->
+    </div>
+</section>
+
+
+
+
+@code {
+
+  string Usuario = "";
+  string Clave = "";
+  string Mensaje = "";
+  void Login()
+  {
+
+    var intento = Uitls.ValidarUsuario(Usuario, Clave);
+    if (intento.Count > 0)
+    {
+
+      Mensaje = "Bienvenido";
+      SessionStorage.SetAsync("UsuarioId", intento["idUsuario"].ToString());
+      SessionStorage.SetAsync("UsuarioNombre", Usuario);
+      SessionStorage.SetAsync("UsuarioCorreo", intento["correo"].ToString());
+      NavigationManager.NavigateTo("/Inicio");
+
+    }
+    else
+    {
+      Mensaje = "Usuario o clave incorrecta";
+    }
+
+  }
+
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
+    var usuario = (await SessionStorage.GetAsync<string>("UsuarioId")).Value ?? "";
+    if (usuario.Length > 0)
+    {
+
+      NavigationManager.NavigateTo("/Inicio");
+    }
+  }
+
+}

@@ -1,0 +1,319 @@
+@page "/Clientes"
+
+@if (modo == ModoApp.Lista)
+{
+    <h3> Listado de los clientes nuenvo (@clientes.Count) </h3>
+    <div class="text-end">
+        <button class="btn btn-outline-dark btn-sm" @onclick="nuevoCliente">Nuevo Clientes</button>
+    </div>
+     <table class="table table-hover ">
+        <thead class="bg-secondary ">
+            <tr class="text-white">
+                <th>Codigo</th>
+                <th>Cedula</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Fecha Nacimiento</th>
+                <th>Email</th>
+                <th>Telefono</th>
+                <th>Celular</th>
+                <th>Direccion</th>
+                <th>Estado Civil</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (clientes.Count > 0)
+            {
+                @foreach (var cliente in clientes)
+                {
+                    <tr>
+                        <td>@cliente["idCliente"]</td>
+                        <td>@cliente["cedula"]</td>
+                        <td>@cliente["nombreCliente"]</td>
+                        <td>@cliente["apellidoCliente"]</td>
+                        <td>@cliente["fechaNacimiento"]</td>
+                        <td>@cliente["correoCliente"]</td>
+                        <td>@cliente["telefono"]</td>
+                        <td>@cliente["celular"]</td>
+                        <td>@cliente["direccion"]</td>
+                        <td>@cliente["listaestadoCivil"]</td>
+                        <td>
+                            <button @onclick="(e)=>{editarCliente(cliente); }" class="btn btn-outline-primary btn-sm oi oi-browser"> Editar </button>
+                            <button @onclick="(e)=>{eliminarCliente(cliente); }" class="btn btn-outline-danger btn-sm oi oi-trash"> Eliminar </button>
+                        </td>
+                    </tr>
+                }
+
+            }
+            else
+            {
+                <tr>
+                    <td colspan="4">No hay Clientes registrados</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+}
+
+@if (modo == ModoApp.Insertar)
+{
+    <h3> Nuevo Cliente </h3>
+   <form><b>
+       <font face="ginebra">
+           <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Codigo</span>
+            <input type="text" class="form-control" @oninput="(e)=> { setCampo(e.Value.ToString(), 1); }">
+        </div>
+
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Cedula</span>
+            <input type="text" class="form-control" @oninput="(e)=> { setCampo(e.Value.ToString(), 2); }">
+        </div>
+
+    <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Nombre</span>
+            <input type="text" class="form-control" @oninput="(e)=> { setCampo(e.Value.ToString(), 3); }">
+        </div>
+
+   <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Apellido</span>
+            <input type="text" class="form-control" @oninput="(e)=> { setCampo(e.Value.ToString(), 4); }">
+        </div>
+        
+    <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Fecha Nacimiento</span>
+            <input type="text" class="form-control" @oninput="(e)=> { setCampo(e.Value.ToString(), 5); }">
+        </div>
+    <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Email</span>
+            <input type="text" class="form-control" @oninput="(e)=> { setCampo(e.Value.ToString(), 6); }">
+        </div>
+
+  <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Telefono</span>
+            <input type="text" class="form-control" @oninput="(e)=> { setCampo(e.Value.ToString(), 7); }">
+        </div>
+
+    <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Celular</span>
+            <input type="text" class="form-control" @oninput="(e)=> { setCampo(e.Value.ToString(), 8); }">
+        </div>
+
+    <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Direccion</span>
+            <input type="text" class="form-control" @oninput="(e)=> { setCampo(e.Value.ToString(), 9); }">
+        </div>
+
+       <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz"  >Estado Civil</span>
+           <select  type="text" class="form-control" name="estado" id="estado" @oninput="(e)=> { setCampo(e.Value.ToString(), 10); }"  >
+               <option selected>Seleccione.........</option>
+                  @foreach (var lista_estadoCivil in listaCivil)
+                {
+                    <option value="@lista_estadoCivil["id_estadoCivil"]">@lista_estadoCivil["nombre"]</option>
+
+                }
+            </select>
+        </div>
+
+    <div class="text-center">
+        <button class="btn btn-outline-success oi oi-task" @onclick="guardarCliente"> Guardar Ingreso </button>
+        <button class="btn btn-outline-danger oi oi-x" @onclick="cancelarCliente"> Cancelar Ingreso </button>
+    </div>
+    
+ </font>
+
+  </b> 
+
+  </form>
+}
+
+@if (modo == ModoApp.Modificar)
+{
+    <h3> Nuevo Cliente </h3>
+   <form><b>
+       <font face="ginebra">
+           <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Codigo</span>
+            <input value="@client["idCliente"]" readonly type="text" class="form-control" />
+        </div>
+
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Cedula</span>
+            <input value="@client["cedula"]" type="text" class="form-control" @oninput="(e)=> { setCampo(e.Value.ToString(), 2); }">
+        </div>
+
+    <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Nombre</span>
+            <input value="@client["nombreCliente"]" type="text" class="form-control" @oninput="(e)=> { setCampo(e.Value.ToString(), 3); }">
+        </div>
+
+   <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Apellido</span>
+            <input value="@client["apellidoCliente"]" type="text" class="form-control" @oninput="(e)=> { setCampo(e.Value.ToString(), 4); }">
+        </div>
+        
+    <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Fecha Nacimiento</span>
+            <input value="@client["fechaNacimiento"]" type="text" class="form-control" @oninput="(e)=> { setCampo(e.Value.ToString(), 5); }">
+        </div>
+    <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Email</span>
+            <input value="@client["correoCliente"]" type="text" class="form-control" @oninput="(e)=> { setCampo(e.Value.ToString(), 6); }">
+        </div>
+
+  <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Telefono</span>
+            <input value="@client["telefono"]" type="text" class="form-control" @oninput="(e)=> { setCampo(e.Value.ToString(), 7); }">
+        </div>
+
+    <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Celular</span>
+            <input value="@client["celular"]" type="text" class="form-control" @oninput="(e)=> { setCampo(e.Value.ToString(), 8); }">
+        </div>
+
+    <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Direccion</span>
+            <input value="@client["direccion"]" type="text" class="form-control" @oninput="(e)=> { setCampo(e.Value.ToString(), 9); }">
+        </div>
+
+  <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz"  >Estado Civil</span>
+           <select value="@client["listaestadoCivil"]"  type="text" class="form-control" name="estado" id="estado" @oninput="(e)=> { setCampo(e.Value.ToString(), 10); }"  >
+                @foreach (var lista_estadoCivil in listaCivil)
+                {
+                    
+                    <option value="@lista_estadoCivil["id_estadoCivil"]">@lista_estadoCivil["nombre"]</option>
+
+                }
+            </select>
+        </div>
+    <div class="text-center">
+        <button class="btn btn-outline-success oi oi-task " @onclick="guardarModificacion"> Guardar Editor </button>
+        <button class="btn btn-outline-danger oi oi-x" @onclick="cancelarCliente"> Cancelar Editor </button>
+    </div>
+    
+ </font>
+
+  </b> 
+
+  </form>
+}
+
+@code {
+
+   
+    Dictionary<string, object> client = new Dictionary<string, object>();
+   
+    List<Dictionary<string, object>> clientes = new List<Dictionary<string, object>>();
+    List<Dictionary<string, object>> listaCivil = new List<Dictionary<string, object>>();
+
+  
+
+    ModoApp modo = ModoApp.Lista;
+    protected override async Task OnInitializedAsync()
+    {
+        actualizarLista();
+    }
+
+    void actualizarLista(){
+
+        clientes = Conexion.consulta(@"select idCliente, cedula, nombreCliente,apellidoCliente,fechaNacimiento,correoCliente,telefono,celular,direccion,l.nombre as listaestadoCivil from Cliente
+        inner join lista_estadoCivil l on l.id_estadoCivil = Cliente.listaestadoCivil");
+        listaCivil= Conexion.consulta("SELECT * FROM lista_estadoCivil");
+        
+    }
+
+    public void editarCliente(Dictionary<string, object> cliente)
+    {
+        client = cliente;
+        modo = ModoApp.Modificar;
+    }
+
+    public void guardarModificacion(){
+
+        Conexion.Actualizar("cliente", client, "idCliente");
+
+        modo = ModoApp.Lista;
+        actualizarLista();
+        
+    }
+
+     public void eliminarCliente(Dictionary<string, object> cliente){
+
+        var sql = "delete from cliente where idCliente =" + cliente["idCliente"];
+        Conexion.Ejecutar(sql);
+
+        actualizarLista();
+    }
+
+    void nuevoCliente()
+    {
+        modo = ModoApp.Insertar;
+        client = new Dictionary<string, object>();
+    }
+
+    void guardarCliente()
+    {
+         if (clientes.Count > 0){
+
+        Conexion.insertar(" cliente ", client);
+         }
+        modo = ModoApp.Lista;
+        actualizarLista();
+    }
+
+    void setCampo(string valor, int campo)
+    {
+        switch(campo){
+
+            case 1:
+              client ["idCliente"] = valor;
+              break;
+            case 2:
+              client ["cedula"] = valor;
+              break;
+
+               case 3:
+              client ["nombreCliente"] = valor;
+              break;
+              
+            case 4:
+              client ["apellidoCliente"] = valor;
+              break;
+
+              case 5:
+              client ["fechaNacimiento"] = valor;
+              break;
+
+              case 6:
+              client ["correoCliente"] = valor;
+              break;
+
+                case 7:
+              client ["telefono"] = valor;
+              break;
+
+                case 8:
+              client ["celular"] = valor;
+              break;
+
+                case 9:
+              client ["direccion"] = valor;
+              break;
+
+                  case 10:
+              client ["listaestadoCivil"] = valor;
+              break;
+        }
+      
+    }
+    void cancelarCliente(){
+
+        modo = ModoApp.Lista;
+    }
+
+
+}

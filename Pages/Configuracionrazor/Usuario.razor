@@ -1,0 +1,234 @@
+@page "/configuracion/usuarios"
+@inject IJSRuntime JS
+
+@if (modo == ModoApp.Lista)
+{
+    <h3>Configuracion de Usuarios (@listaUsuario.Count)</h3>
+
+    <div class="text-end">
+        <button @onclick="nuevoUsuario" class="btn btn-outline-dark btn-sm">Nuevo Usuuario</button>
+    </div> <br>
+
+    <table class="table table-hover ">
+        <thead class="bg-secondary ">
+            <tr class="text-white">
+                <th>Codigo</th>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Usuario</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (listaUsuario.Count > 0)
+            {
+                @foreach (var usuario in listaUsuario)
+                {
+                    <tr>
+                        <td>@usuario["idUsuario"]</td>
+                        <td>@usuario["nombre"]</td>
+                        <td>@usuario["correo"]</td>
+                        <td>@usuario["usuarios"]</td>
+                        <td>
+                            <button @onclick="(e)=>{editarUsuario(usuario); }" class="btn btn-outline-primary btn-sm oi oi-browser"> Editar </button>
+                            <button @onclick="(e)=>{eliminarUsuario(usuario); }" class="btn btn-outline-danger btn-sm oi oi-trash"> Eliminar </button>
+                        </td>
+                    </tr>
+                }
+
+            }
+            else
+            {
+                <tr>
+                    <td colspan="4">No hay Usuario registrados</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@if (modo == ModoApp.Insertar)
+{
+    <h5> Resgistrar Nuevo Usuario </h5>
+
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Codigo</span>
+            <input  type="text" class="form-control">
+        </div>
+        
+
+  
+         <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Usuario</span>
+            <input type="text"  class="form-control"  @oninput="(e)=> { setCampo(e.Value.ToString(), 2); }">
+        </div>
+        
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Clave</span>
+            <input type="text" class="form-control" @oninput="(e)=> { setCampo(e.Value.ToString(), 3); }" placeholder="Escriba una clave para cambiarla">
+>
+        </div>
+       
+
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Nombre</span>
+            <input type="text"  class="form-control"  @oninput="(e)=> { setCampo(e.Value.ToString(), 4); }">
+        </div>
+       
+         <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Correo</span>
+            <input type="text"  class="form-control"  @oninput="(e)=> { setCampo(e.Value.ToString(), 5); }">
+        </div>
+
+    <form>
+        <div class="text-center">
+            <button @onclick="Guardar" class="btn btn-outline-success oi oi-task"> Guardar Ingreso </button>
+            <button @onclick="Cancelar" class="btn btn-outline-danger oi oi-x "> Cancelar Ingreso </button>
+
+        </div>
+    </form>
+}
+
+@if (modo == ModoApp.Modificar)
+{
+    <h3> Resgistrar Nuevo Usuario </h3>
+
+          <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Codigo</span>
+            <input value="@user["idUsuario"]" readonly type="text" class="form-control">
+        </div>
+        
+
+  
+         <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Usuario</span>
+            <input value="@user["usuarios"]" type="text"  class="form-control"  @oninput="(e)=> { setCampo(e.Value.ToString(), 2); }">
+        </div>
+        
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Clave</span>
+            <input type="text" class="form-control" @oninput="(e)=> { setCampo(e.Value.ToString(), 3); }" placeholder="Escriba una clave para cambiarla">
+
+        </div>
+       
+
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Nombre</span>
+            <input value="@user["nombre"]"  type="text"  class="form-control"  @oninput="(e)=> { setCampo(e.Value.ToString(), 4); }">
+        </div>
+       
+         <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addonz">Correo</span>
+            <input value="@user["correo"]" type="text"  class="form-control"  @oninput="(e)=> { setCampo(e.Value.ToString(), 5); }">
+        </div>
+
+    <form>
+        <div class="text-center no-print">
+            <button @onclick="guardarModificacion" class="btn btn-outline-success oi oi-task "> Guardar Editor </button>
+              
+              
+            
+            <button @onclick="Cancelar" class="btn btn-outline-danger oi oi-x"> Cancelar Editor </button>
+
+        </div>
+    </form>
+    <div class="text-end no-print">
+    <button @onclick="imprimirT" class=" btn btn-group-vertical text-black "> Imprimir </button>
+    </div>
+}
+
+@code {
+
+    Dictionary<string, object> user = new Dictionary<string, object>();
+    List<Dictionary<string, object>> listaUsuario = new List<Dictionary<string, object>>();
+
+    ModoApp modo = ModoApp.Lista;
+
+    protected override async Task OnInitializedAsync()
+    {
+        actualizarLista();
+    }
+    public void actualizarLista()
+    {
+
+        listaUsuario = Conexion.consulta("SELECT * FROM usuario");
+    }
+
+    public void editarUsuario(Dictionary<string, object> usuario)
+    {
+        usuario["clave"] = "";
+        user = usuario;
+        modo = ModoApp.Modificar;
+    }
+
+    public void guardarModificacion(){
+
+        if (user["clave"].ToString() != ""){
+           user["clave"] = Conexion.CreateMD5(user["clave"].ToString());
+        }else{
+            user.Remove("clave");
+        }
+        Conexion.Actualizar("usuario", user, "idUsuario");
+
+        modo = ModoApp.Lista;
+        actualizarLista();
+        
+    }
+
+    public void eliminarUsuario(Dictionary<string, object> usuario){
+
+        var sql = "delete from usuario where idUsuario =" + usuario["idUsuario"];
+        Conexion.Ejecutar(sql);
+
+        actualizarLista();
+    }
+    public void nuevoUsuario()
+    {
+
+        modo = ModoApp.Insertar;
+        user = new Dictionary<string, object>();
+    }
+    public void Guardar()
+    {
+        if (user.ContainsKey("clave") && user.ContainsKey("usuarios"))
+        {
+            user["clave"] = Conexion.CreateMD5(user["clave"].ToString());
+            Conexion.insertar("usuario", user);
+        }
+        modo = ModoApp.Lista;
+        actualizarLista();
+    }
+    void setCampo(string valor, int campo)
+    {
+        switch (campo)
+        {
+            case 1:
+                user["idUsuario"] = valor;
+                break;
+            case 2:
+                user["usuarios"] = valor;
+                break;
+            case 3:
+                user["clave"] = valor;
+                break;
+            case 4:
+                user["nombre"] = valor;
+                break;
+            case 5:
+                user["correo"] = valor;
+                break;
+        }
+    }
+
+    void imprimirT(){
+
+        JS.InvokeVoidAsync("print");
+
+    }
+
+    void Cancelar()
+    {
+        modo = ModoApp.Lista;
+    }
+
+}

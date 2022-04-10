@@ -1,0 +1,44 @@
+﻿<div class="top-row ps-3 navbar navbar-dark no-print">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="Inicio">ABOPRO </a>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
+
+<div class="@NavMenuCssClass no-print" @onclick="ToggleNavMenu">
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="Inicio" Match="NavLinkMatch.All">
+                <span class="oi oi-home" aria-hidden="true"></span> Inicio
+            </NavLink>
+        </div>
+         <div class="nav-item px-3">
+            <NavLink class="nav-link" href="casos" Match="NavLinkMatch.All">
+                <span class="oi oi-briefcase" aria-hidden="true"></span> Casos
+            </NavLink>
+        </div>
+          <div class="nav-item px-3">
+            <NavLink class="nav-link" href="Clientes" Match="NavLinkMatch.All">
+                <span class="oi oi-person" aria-hidden="true"></span> Clientes
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="configuracion">
+                <span class="oi oi-layers" aria-hidden="true"></span> Configuracion
+            </NavLink>
+        </div>
+    </nav>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}

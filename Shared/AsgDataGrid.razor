@@ -1,0 +1,34 @@
+@if (Datax.Count > 0)
+{
+
+    <table class="table table-hover table-bordered ">
+        <thead class="thead-dark">
+            <tr>
+                @foreach (var item in Datax[0])
+                {
+                    <th scope="col">@item.Key</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Datax)
+            {
+                <tr>
+                    @foreach (var item2 in item)
+                    {
+                        <td>@item2.Value</td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+
+}else{
+    <h2>No Hay Datos</h2>
+}
+
+@code {
+
+    [Parameter]
+    public List<Dictionary<string, object>> Datax { get; set; } = new List<Dictionary<string, object>>();
+}

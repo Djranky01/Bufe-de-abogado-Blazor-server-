@@ -1,0 +1,46 @@
+﻿@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject ProtectedSessionStorage SessionStorage
+@inject NavigationManager NavigationManager
+
+<PageTitle>bufeAbogado</PageTitle>
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <div class="top-row px-4">
+         
+         @Usuario
+         <a href="#" @onclick="salir">Salir</a>
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+@code{
+
+    string Usuario = "";
+
+      protected override async Task OnAfterRenderAsync(bool firstRender)
+     {
+          Usuario = (await SessionStorage.GetAsync<string>("UsuarioNombre")).Value ?? "";
+            var  Usuarioid = (await SessionStorage.GetAsync<string>("UsuarioId")).Value ?? "";
+
+                if(Usuarioid.Length == 0){
+                    NavigationManager.NavigateTo("/");
+                }
+             StateHasChanged(); 
+     }
+
+    void salir(){
+
+        SessionStorage.SetAsync("UsuarioId","");
+        NavigationManager.NavigateTo("/");
+    }
+}
